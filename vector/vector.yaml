@@ -173,10 +173,10 @@ sinks:
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
     compression: snappy
-    # labels:
+    labels:
     #   '"*"': "{{ metadata }}"
     #   '"pod_labels_*"': "{{ kubernetes.pod_labels }}"
-    #   source: vector
+      source: vector
     #   "{{ event_field }}": "{{ some_other_event_field }}"
     out_of_order_action: drop
     path: /loki/api/v1/push
