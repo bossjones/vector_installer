@@ -74,6 +74,10 @@ chown -R vector:vector /var/lib/vector
 
 curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev | bash -s -- -y
 
+set -x
+
+cp -a ~/.vector/bin/vector /usr/local/bin/vector
+
 mkdir -p /etc/vector || true
 cp -a ./vector/vector.yaml /etc/vector/vector.yaml
 
@@ -89,9 +93,9 @@ Requires=network-online.target
 [Service]
 User=root
 Group=root
-ExecStartPre=/usr/bin/vector validate
-ExecStart=/usr/bin/vector
-ExecReload=/usr/bin/vector validate
+ExecStartPre=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
+ExecStart=/usr/local/bin/vector --config /etc/vector/vector.yaml
+ExecReload=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
 ExecReload=/bin/kill -HUP \$MAINPID
 Restart=always
 AmbientCapabilities=CAP_NET_BIND_SERVICE
