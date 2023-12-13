@@ -236,7 +236,8 @@ sinks:
       codec: "json"
 
   prometheus:
-    type: "prometheus"
+    type: "prometheus_remote_write"
     inputs:
       - "vector_metrics"
-    endpoint: "http://pushgateway.scarlettlab.home"
+    endpoint: "http://pushgateway.scarlettlab.home/api/prom/push"
+    healthcheck: false
