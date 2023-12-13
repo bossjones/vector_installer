@@ -55,8 +55,8 @@ if [ "$(id -u)" != "0" ]; then
   exit 1
 fi
 
-sudo apt update
-sudo apt install -y curl wget
+apt update
+apt install -y curl wget
 
 # ------------------------------------------------------------------------------
 
