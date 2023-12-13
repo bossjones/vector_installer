@@ -193,4 +193,4 @@ sinks:
     type: "prometheus_remote_write"
     inputs:
       - "vector_metrics"
-    address: "http://pushgateway.scarlettlab.home"
+    endpoint: "http://pushgateway.scarlettlab.home"
