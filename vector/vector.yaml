@@ -1,0 +1,194 @@
+# Set global options
+data_dir: "/var/lib/vector"
+
+# Vector's API (disabled by default)
+# Enable and try it out with the `vector top` command
+api:
+  enabled: true
+  address: "0.0.0.0:8686"
+
+# Ingest data by tailing one or more files
+sources:
+  vector_metrics: # internal metrics
+    type: "internal_metrics"
+
+  apache_logs:
+    type: "file"
+    include:
+      - "/var/log/apache2/*.log" # supports globbing
+    ignore_older: 86400          # 1 day
+
+  vector_logs:
+    type: "internal_logs"
+
+  var_log_wildcard_logs:
+    type: "file"
+    include:
+      - "/var/log/**/*log" # supports globbing
+    ignore_older: 86400          # 1 day
+    # The delay between file discovery calls.
+    # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
+    glob_minimum_cooldown_ms: 1000
+    # host_key: host
+    # Ignore files with a data modification date older than the specified number of seconds.
+    # ignore_older_secs: 600
+    # line_delimiter: "\n"
+    max_line_bytes: 102400
+    max_read_bytes: 2048
+    # offset_key: offset
+    # read_from: beginning
+
+  var_log_logs:
+    type: "file"
+    include:
+      - "/var/log/*log" # supports globbing
+    ignore_older: 86400          # 1 day
+    # The delay between file discovery calls.
+    # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
+    glob_minimum_cooldown_ms: 1000
+    # host_key: host
+    # Ignore files with a data modification date older than the specified number of seconds.
+    # ignore_older_secs: 600
+    # line_delimiter: "\n"
+    max_line_bytes: 102400
+    max_read_bytes: 2048
+    # offset_key: offset
+    # read_from: beginning
+
+  proxmox_task_logs:
+    type: "file"
+    include:
+      - "/var/log/pve/tasks/**/*" # supports globbing
+    exclude:
+      - "/var/log/pve/tasks/5"
+      - "/var/log/pve/tasks/4"
+      - "/var/log/pve/tasks/A"
+      - "/var/log/pve/tasks/B"
+      - "/var/log/pve/tasks/6"
+      - "/var/log/pve/tasks/3"
+      - "/var/log/pve/tasks/D"
+      - "/var/log/pve/tasks/7"
+      - "/var/log/pve/tasks/F"
+      - "/var/log/pve/tasks/E"
+      - "/var/log/pve/tasks/2"
+      - "/var/log/pve/tasks/0"
+      - "/var/log/pve/tasks/C"
+      - "/var/log/pve/tasks/1"
+      - "/var/log/pve/tasks/9"
+      - "/var/log/pve/tasks/8"
+    ignore_older: 86400          # 1 day
+    # The delay between file discovery calls.
+    # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
+    glob_minimum_cooldown_ms: 1000
+    # host_key: host
+    # Ignore files with a data modification date older than the specified number of seconds.
+    # ignore_older_secs: 600
+    # line_delimiter: "\n"
+    max_line_bytes: 102400
+    max_read_bytes: 2048
+    # offset_key: offset
+    # read_from: beginning
+
+  journald:
+    type: journald
+    # batch_size: 16
+    # current_boot_only: true
+    # data_dir: /var/lib/vector
+    # exclude_matches:
+    #   _SYSTEMD_UNIT:
+    #     - sshd.service
+    #     - ntpd.service
+    #   _TRANSPORT:
+    #     - kernel
+    # exclude_units:
+    #   - badservice
+    # extra_args:
+    #   - --merge
+    # include_matches:
+    #   _SYSTEMD_UNIT:
+    #     - sshd.service
+    #     - ntpd.service
+    #   _TRANSPORT:
+    #     - kernel
+    # include_units:
+    #   - ntpd
+
+# Structure and parse via Vector's Remap Language
+transforms:
+  apache_parser:
+    inputs:
+      - "apache_logs"
+    type: "remap"
+    source: ". = parse_apache_log(.message)"
+
+  # Sample the data to save on cost
+  apache_sampler:
+    inputs:
+      - "apache_parser"
+    type: "sample"
+    rate: 2 # only keep 50% (1/`rate`)
+
+  vector_modify:
+    inputs:
+      - "vector_logs"
+    type: remap
+    # Reformat the timestamp to Unix time
+    source: ".timestamp = to_unix_timestamp!(to_timestamp!(.timestamp))"
+
+  proxmox_task_logs_reduce:
+    type: reduce
+    inputs:
+      - "proxmox_task_logs"
+
+  # SOURCE: https://vector.dev/docs/reference/configuration/
+  add_host:
+    type: "remap"
+    source: |
+      # Basic usage. "$HOSTNAME" also works.
+      .host = "${HOSTNAME}" # or "$HOSTNAME"
+      .nodename = "${HOSTNAME}" # or "$HOSTNAME"
+      .instance = "${HOSTNAME}" # or "$HOSTNAME"
+
+      .cluster = "k3d"
+    inputs:
+      - "proxmox_task_logs"
+      - "var_log_logs"
+      - "var_log_wildcard_logs"
+
+
+# Send structured data to a short-term storage
+sinks:
+  console:
+    type: "console"
+    inputs:
+      - "vector_logs"
+    encoding:
+      codec: "json"
+
+  # https://vector.dev/docs/reference/configuration/sinks/loki/#label-expansion
+  loki:
+    type: loki
+    inputs:
+      - "proxmox_task_logs_reduce"
+    # endpoint: http://localhost:3100
+    endpoint: http://loki-gateway.scarlettlab.home
+    compression: snappy
+    # labels:
+    #   '"*"': "{{ metadata }}"
+    #   '"pod_labels_*"': "{{ kubernetes.pod_labels }}"
+    #   source: vector
+    #   "{{ event_field }}": "{{ some_other_event_field }}"
+    out_of_order_action: drop
+    path: /loki/api/v1/push
+    remove_timestamp: true
+    tenant_id: docker
+    request:
+      concurrency: "adaptive"
+      rate_limit_duration_secs: 1
+      rate_limit_num: 10
+
+  prometheus:
+    type: "prometheus_remote_write"
+    inputs:
+      - "vector_metrics"
+    address: "http://pushgateway.scarlettlab.home"
