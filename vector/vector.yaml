@@ -12,11 +12,11 @@ sources:
   vector_metrics: # internal metrics
     type: "internal_metrics"
 
-  apache_logs:
-    type: "file"
-    include:
-      - "/var/log/apache2/*.log" # supports globbing
-    ignore_older: 86400          # 1 day
+  # apache_logs:
+  #   type: "file"
+  #   include:
+  #     - "/var/log/apache2/*.log" # supports globbing
+  #   ignore_older: 86400          # 1 day
 
   vector_logs:
     type: "internal_logs"
@@ -115,18 +115,18 @@ sources:
 
 # Structure and parse via Vector's Remap Language
 transforms:
-  apache_parser:
-    inputs:
-      - "apache_logs"
-    type: "remap"
-    source: ". = parse_apache_log(.message)"
+  # apache_parser:
+  #   inputs:
+  #     - "apache_logs"
+  #   type: "remap"
+  #   source: ". = parse_apache_log(.message)"
 
-  # Sample the data to save on cost
-  apache_sampler:
-    inputs:
-      - "apache_parser"
-    type: "sample"
-    rate: 2 # only keep 50% (1/`rate`)
+  # # Sample the data to save on cost
+  # apache_sampler:
+  #   inputs:
+  #     - "apache_parser"
+  #   type: "sample"
+  #   rate: 2 # only keep 50% (1/`rate`)
 
   vector_modify:
     inputs:
