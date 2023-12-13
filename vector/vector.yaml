@@ -7,6 +7,11 @@ api:
   enabled: true
   address: "0.0.0.0:8686"
 
+log_schema:
+  timestamp_key: vector_timestamp
+  # host_key: log_host
+
+
 # Ingest data by tailing one or more files
 sources:
   vector_metrics: # internal metrics
@@ -128,20 +133,59 @@ transforms:
   #   type: "sample"
   #   rate: 2 # only keep 50% (1/`rate`)
 
-  vector_modify:
+  vector_parser_modify:
     inputs:
       - "vector_logs"
     type: remap
     # Reformat the timestamp to Unix time
-    source: ".timestamp = to_unix_timestamp!(to_timestamp!(.timestamp))"
+    # ".timestamp = to_unix_timestamp!(to_timestamp!(.timestamp))"
+    source: |
+      matches, err = parse_regex(
+        .message,
+        r'^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{9}) (?P<message>.*)'
+      )
+      if matches != null {
+        .message = matches.message
+        .@timestamp = parse_timestamp!(matches.time, "%F %T%.9f")
+      } else {
+        log(err, level: "error")
+        .malformed = true
+      }
+
+  vector_parser_modify_malformed_message_filter:
+    inputs:
+      - vector_parser_modify
+    type: filter
+    condition: .malformed != true
 
   proxmox_task_logs_reduce:
     type: reduce
     inputs:
       - "proxmox_task_logs"
+      - "var_log_wildcard_logs"
+
+  # SOURCE: https://github.com/mitodl/salt-ops/blob/f9b4bd696151587704004c93aa01076327ade91d/salt/vector/templates/ocw_build_logs.yaml#L6
+  # webhook_publish_log_parser:
+  #   inputs:
+  #     - webhook_publish_log
+  #   type: remap
+  #   source: |
+  #     matches, err = parse_regex(
+  #       .message,
+  #       r'^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{9}) (?P<message>.*)'
+  #     )
+  #     if matches != null {
+  #       .message = matches.message
+  #       .@timestamp = parse_timestamp!(matches.time, "%F %T%.9f")
+  #       .labels = ["ocw_build"]
+  #       .environment = "{{ config_elements.environment }}"
+  #     } else {
+  #       log(err, level: "error")
+  #       .malformed = true
+  #     }
 
   # SOURCE: https://vector.dev/docs/reference/configuration/
-  add_host:
+  add_host_parser:
     type: "remap"
     source: |
       # Basic usage. "$HOSTNAME" also works.
@@ -169,6 +213,7 @@ sinks:
   loki:
     type: loki
     inputs:
+      - "proxmox_task_logs_reduce"
       - "proxmox_task_logs_reduce"
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
