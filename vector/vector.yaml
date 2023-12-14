@@ -228,7 +228,7 @@ sinks:
       source: vector
     #   "{{ event_field }}": "{{ some_other_event_field }}"
     out_of_order_action: accept
-    path: /loki/api/v1/push
+    # path: /loki/api/v1/push
     remove_timestamp: true
     tenant_id: docker
     request:
