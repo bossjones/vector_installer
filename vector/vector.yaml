@@ -205,8 +205,8 @@ sinks:
   console:
     type: "console"
     inputs:
-      # - "vector_logs"
-      - "add_host_parser"
+      - "vector_logs"
+      # - "add_host_parser"
       # - "proxmox_task_logs_reduce"
       # - "vector_parser_modify_malformed_message_filter"
     encoding:
@@ -225,7 +225,7 @@ sinks:
     labels:
     #   '"*"': "{{ metadata }}"
     #   '"pod_labels_*"': "{{ kubernetes.pod_labels }}"
-      source: vector
+      forwarder: vector
     #   "{{ event_field }}": "{{ some_other_event_field }}"
     out_of_order_action: accept
     # path: /loki/api/v1/push
@@ -238,9 +238,9 @@ sinks:
     encoding:
       codec: "text"
 
-  prometheus:
-    type: "prometheus_remote_write"
-    inputs:
-      - "vector_metrics"
-    endpoint: "http://pushgateway.scarlettlab.home/api/prom/push"
-    healthcheck: false
+  # prometheus:
+  #   type: "prometheus_remote_write"
+  #   inputs:
+  #     - "vector_metrics"
+  #   endpoint: "http://pushgateway.scarlettlab.home/api/prom/push"
+  #   healthcheck: false
