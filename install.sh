@@ -124,5 +124,6 @@ if getent group 'systemd-journal-remote'; then
   systemctl daemon-reload || true
 fi
 
+systemctl daemon-reload || true
 systemctl start vector
 systemctl enable vector
