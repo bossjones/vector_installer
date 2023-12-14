@@ -167,6 +167,26 @@ transforms:
     #   .malformed = true
     # }
 
+  vector_parser_add_timestamp:
+    inputs:
+      - "vector_logs"
+    type: remap
+    # Reformat the timestamp to Unix time
+    # ".timestamp = to_unix_timestamp!(to_timestamp!(.timestamp))"
+    source: |
+      .malformed = false
+      matches, err = parse_regex(
+        .message,
+        r'^(?P<message>.*)'
+      )
+      if matches != null {
+        .message = matches.message
+        .@timestamp = now()
+      } else {
+        log(err, level: "error")
+        .malformed = true
+      }
+
   vector_parser_modify_malformed_message_filter:
     inputs:
       - vector_parser_modify
@@ -246,6 +266,26 @@ sinks:
     path: /tmp/journald-%Y-%m-%d.log
     encoding:
       codec: "text"
+
+  vector_parser_add_timestamp_test_file_sink:
+    type: file
+    inputs:
+      - "vector_parser_add_timestamp"
+    compression: none
+    idle_timeout_secs: 30
+    path: /tmp/vector-timestamp-%Y-%m-%d.log
+    encoding:
+      codec: "text"
+
+  vector_parser_add_timestamp_test_file_sink_json:
+    type: file
+    inputs:
+      - "vector_parser_add_timestamp"
+    compression: none
+    idle_timeout_secs: 30
+    path: /tmp/vector-timestamp-json-%Y-%m-%d.log
+    encoding:
+      codec: "json"
 
   # https://vector.dev/docs/reference/configuration/sinks/loki/#label-expansion
   loki:
