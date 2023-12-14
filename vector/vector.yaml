@@ -205,10 +205,10 @@ sinks:
   console:
     type: "console"
     inputs:
-      - "vector_logs"
+      # - "vector_logs"
       - "add_host_parser"
-      - "proxmox_task_logs_reduce"
-      - "vector_parser_modify_malformed_message_filter"
+      # - "proxmox_task_logs_reduce"
+      # - "vector_parser_modify_malformed_message_filter"
     encoding:
       codec: "json"
 
