@@ -216,9 +216,9 @@ sinks:
   loki:
     type: loki
     inputs:
-      - "proxmox_task_logs_reduce"
+      # - "proxmox_task_logs_reduce"
       - "add_host_parser"
-      - "vector_parser_modify_malformed_message_filter"
+      # - "vector_parser_modify_malformed_message_filter"
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
     compression: snappy
