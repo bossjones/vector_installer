@@ -293,7 +293,8 @@ sinks:
     inputs:
       # - "proxmox_task_logs_reduce"
       # - "add_host_parser"
-      - "vector_parser_modify_malformed_message_filter"
+      # - "vector_parser_modify_malformed_message_filter"
+      - "vector_parser_add_timestamp"
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
     compression: snappy
@@ -304,7 +305,7 @@ sinks:
     #   "{{ event_field }}": "{{ some_other_event_field }}"
     out_of_order_action: accept
     # path: /loki/api/v1/push
-    remove_timestamp: true
+    # remove_timestamp: true
     tenant_id: docker
     request:
       concurrency: "adaptive"
