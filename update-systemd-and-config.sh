@@ -38,6 +38,6 @@ StartLimitBurst=5
 WantedBy=multi-user.target
 EOF
 
-systemctl daemon-reload || true
-systemctl restart vector
-systemctl enable vector
+systemctl daemon-reload &&
+  systemctl restart vector &&
+  systemctl enable vector
