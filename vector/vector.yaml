@@ -233,6 +233,14 @@ sinks:
     encoding:
       codec: "text"
 
+  test_file_sink:
+    type: file
+    inputs:
+      - "vector_parser_modify_malformed_message_filter"
+    compression: none
+    idle_timeout_secs: 30
+    path: /tmp/vector-%Y-%m-%d.log
+
   # https://vector.dev/docs/reference/configuration/sinks/loki/#label-expansion
   loki:
     type: loki

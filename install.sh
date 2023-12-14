@@ -94,7 +94,7 @@ Requires=network-online.target
 User=root
 Group=root
 ExecStartPre=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
-ExecStart=/usr/local/bin/vector --config /etc/vector/vector.yaml
+ExecStart=/usr/local/bin/vector --verbose --config /etc/vector/vector.yaml
 ExecReload=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
 ExecReload=/bin/kill -HUP \$MAINPID
 Restart=always
@@ -125,5 +125,5 @@ if getent group 'systemd-journal-remote'; then
 fi
 
 systemctl daemon-reload || true
-systemctl start vector
+systemctl restart vector
 systemctl enable vector
