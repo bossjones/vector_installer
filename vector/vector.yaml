@@ -237,6 +237,9 @@ sinks:
       rate_limit_num: 10
     encoding:
       codec: "text"
+    auth:
+      strategy: "bearer"
+      token: "none"
 
   # prometheus:
   #   type: "prometheus_remote_write"

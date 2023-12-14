@@ -100,6 +100,7 @@ ExecReload=/bin/kill -HUP \$MAINPID
 Restart=always
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 EnvironmentFile=-/etc/default/vector
+Environment=VECTOR_LOG=debug
 # Since systemd 229, should be in [Unit] but in order to support systemd <229,
 # it is also supported to have it here.
 StartLimitInterval=10
