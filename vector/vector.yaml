@@ -240,6 +240,8 @@ sinks:
     compression: none
     idle_timeout_secs: 30
     path: /tmp/vector-%Y-%m-%d.log
+    encoding:
+      codec: "text"
 
   # https://vector.dev/docs/reference/configuration/sinks/loki/#label-expansion
   loki:
