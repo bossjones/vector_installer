@@ -173,46 +173,46 @@ transforms:
     type: filter
     condition: .malformed != true
 
-  proxmox_task_logs_reduce:
-    type: reduce
-    inputs:
-      - "proxmox_task_logs"
-      - "var_log_wildcard_logs"
-
-  # SOURCE: https://github.com/mitodl/salt-ops/blob/f9b4bd696151587704004c93aa01076327ade91d/salt/vector/templates/ocw_build_logs.yaml#L6
-  # webhook_publish_log_parser:
+  # proxmox_task_logs_reduce:
+  #   type: reduce
   #   inputs:
-  #     - webhook_publish_log
-  #   type: remap
+  #     - "proxmox_task_logs"
+  #     - "var_log_wildcard_logs"
+
+  # # SOURCE: https://github.com/mitodl/salt-ops/blob/f9b4bd696151587704004c93aa01076327ade91d/salt/vector/templates/ocw_build_logs.yaml#L6
+  # # webhook_publish_log_parser:
+  # #   inputs:
+  # #     - webhook_publish_log
+  # #   type: remap
+  # #   source: |
+  # #     matches, err = parse_regex(
+  # #       .message,
+  # #       r'^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{9}) (?P<message>.*)'
+  # #     )
+  # #     if matches != null {
+  # #       .message = matches.message
+  # #       .@timestamp = parse_timestamp!(matches.time, "%F %T%.9f")
+  # #       .labels = ["ocw_build"]
+  # #       .environment = "{{ config_elements.environment }}"
+  # #     } else {
+  # #       log(err, level: "error")
+  # #       .malformed = true
+  # #     }
+
+  # # SOURCE: https://vector.dev/docs/reference/configuration/
+  # add_host_parser:
+  #   type: "remap"
   #   source: |
-  #     matches, err = parse_regex(
-  #       .message,
-  #       r'^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{9}) (?P<message>.*)'
-  #     )
-  #     if matches != null {
-  #       .message = matches.message
-  #       .@timestamp = parse_timestamp!(matches.time, "%F %T%.9f")
-  #       .labels = ["ocw_build"]
-  #       .environment = "{{ config_elements.environment }}"
-  #     } else {
-  #       log(err, level: "error")
-  #       .malformed = true
-  #     }
+  #     # Basic usage. "$HOSTNAME" also works.
+  #     .host = "${HOSTNAME}" # or "$HOSTNAME"
+  #     .nodename = "${HOSTNAME}" # or "$HOSTNAME"
+  #     .instance = "${HOSTNAME}" # or "$HOSTNAME"
 
-  # SOURCE: https://vector.dev/docs/reference/configuration/
-  add_host_parser:
-    type: "remap"
-    source: |
-      # Basic usage. "$HOSTNAME" also works.
-      .host = "${HOSTNAME}" # or "$HOSTNAME"
-      .nodename = "${HOSTNAME}" # or "$HOSTNAME"
-      .instance = "${HOSTNAME}" # or "$HOSTNAME"
-
-      .cluster = "k3d"
-    inputs:
-      - "proxmox_task_logs"
-      - "var_log_logs"
-      - "var_log_wildcard_logs"
+  #     .cluster = "k3d"
+  #   inputs:
+  #     - "proxmox_task_logs"
+  #     - "var_log_logs"
+  #     - "var_log_wildcard_logs"
 
 
 # Send structured data to a short-term storage
