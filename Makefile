@@ -36,5 +36,8 @@ stop:
 start:
 	systemctl start vector
 
+cat:
+	systemctl cat vector
+
 validate:
 	vector graph --config ./vector/vector.yaml
