@@ -37,6 +37,23 @@ sources:
     # offset_key: offset
     # read_from: beginning
 
+  daemon_logs:
+    type: "file"
+    include:
+      - "/var/log/daemon.log" # supports globbing
+    ignore_older: 86400          # 1 day
+    # The delay between file discovery calls.
+    # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
+    glob_minimum_cooldown_ms: 1000
+    # host_key: host
+    # Ignore files with a data modification date older than the specified number of seconds.
+    # ignore_older_secs: 600
+    # line_delimiter: "\n"
+    max_line_bytes: 102400
+    max_read_bytes: 2048
+    # offset_key: offset
+    # read_from: beginning
+
   # var_log_wildcard_logs:
   #   type: "file"
   #   include:
@@ -134,6 +151,12 @@ transforms:
   syslog_parser:
     inputs:
       - "syslog_logs"
+    type: "remap"
+    source: ". |= parse_syslog!(.message)"
+
+  daemon_parser:
+    inputs:
+      - "daemon_logs"
     type: "remap"
     source: ". |= parse_syslog!(.message)"
 
@@ -311,6 +334,16 @@ sinks:
     compression: none
     idle_timeout_secs: 30
     path: /tmp/syslog-timestamp-json-%Y-%m-%d.log
+    encoding:
+      codec: "json"
+
+  daemon_test_file_sink_json:
+    type: file
+    inputs:
+      - "daemon_parser"
+    compression: none
+    idle_timeout_secs: 30
+    path: /tmp/daemon-timestamp-json-%Y-%m-%d.log
     encoding:
       codec: "json"
 
