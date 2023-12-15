@@ -29,3 +29,6 @@ redo:
 
 status:
 	systemctl status vector
+
+validate:
+	vector graph --config ./vector/vector.yaml
