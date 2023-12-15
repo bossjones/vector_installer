@@ -37,22 +37,22 @@ sources:
     # offset_key: offset
     # read_from: beginning
 
-  var_log_wildcard_logs:
-    type: "file"
-    include:
-      - "/var/log/**/*log" # supports globbing
-    ignore_older: 86400          # 1 day
-    # The delay between file discovery calls.
-    # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
-    glob_minimum_cooldown_ms: 1000
-    # host_key: host
-    # Ignore files with a data modification date older than the specified number of seconds.
-    # ignore_older_secs: 600
-    # line_delimiter: "\n"
-    max_line_bytes: 102400
-    max_read_bytes: 2048
-    # offset_key: offset
-    # read_from: beginning
+  # var_log_wildcard_logs:
+  #   type: "file"
+  #   include:
+  #     - "/var/log/**/*log" # supports globbing
+  #   ignore_older: 86400          # 1 day
+  #   # The delay between file discovery calls.
+  #   # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
+  #   glob_minimum_cooldown_ms: 1000
+  #   # host_key: host
+  #   # Ignore files with a data modification date older than the specified number of seconds.
+  #   # ignore_older_secs: 600
+  #   # line_delimiter: "\n"
+  #   max_line_bytes: 102400
+  #   max_read_bytes: 2048
+  #   # offset_key: offset
+  #   # read_from: beginning
 
   # var_log_logs:
   #   type: "file"
