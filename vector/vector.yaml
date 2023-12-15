@@ -23,7 +23,19 @@ sources:
   syslog_logs:
     type: "file"
     include:
-      - "/var/log/syslog" # supports globbing
+      - "/var/log/syslog"
+      - "/var/log/mail.info"
+      - "/var/log/mail.warn"
+      - "/var/log/mail.err"
+      - "/var/log/mail.log"
+      - "/var/log/daemon.log"
+      - "/var/log/kern.log"
+      - "/var/log/auth.log"
+      - "/var/log/user.log"
+      - "/var/log/lpr.log"
+      - "/var/log/cron.log"
+      - "/var/log/debug"
+      - "/var/log/messages"
     ignore_older: 86400          # 1 day
     # The delay between file discovery calls.
     # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
@@ -37,10 +49,10 @@ sources:
     # offset_key: offset
     # read_from: beginning
 
-  daemon_logs:
+  auth_logs:
     type: "file"
     include:
-      - "/var/log/daemon.log" # supports globbing
+      - "/var/log/auth.log" # supports globbing
     ignore_older: 86400          # 1 day
     # The delay between file discovery calls.
     # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
@@ -152,13 +164,25 @@ transforms:
     inputs:
       - "syslog_logs"
     type: "remap"
-    source: ". |= parse_syslog!(.message)"
+    source: ". |= parse_syslog!(.message) ?? {}"
 
-  daemon_parser:
+  # daemon_parser:
+  #   inputs:
+  #     - "daemon_logs"
+  #   type: "remap"
+  #   source: ". |= parse_syslog!(.message) ?? {}"
+
+  auth_parser:
     inputs:
-      - "daemon_logs"
+      - "auth_logs"
     type: "remap"
-    source: ". |= parse_syslog!(.message)"
+    source: |
+      structured, err = parse_linux_authorization!(.message)
+      if err != null {
+        log("Unable to parse linux authorization: " + err, level: "error")
+      } else {
+        . = merge(., structured)
+      }
 
   # # Sample the data to save on cost
   # apache_sampler:
@@ -277,75 +301,78 @@ transforms:
 
 # Send structured data to a short-term storage
 sinks:
-  # console:
-  #   type: "console"
+  # ----------------------------------------------------------------------
+  # debugging
+  # ----------------------------------------------------------------------
+  # # console:
+  # #   type: "console"
+  # #   inputs:
+  # #     # - "vector_logs"
+  # #     # - "add_host_parser"
+  # #     # - "proxmox_task_logs_reduce"
+  # #     - "vector_parser_modify_malformed_message_filter"
+  # #   encoding:
+  # #     codec: "text"
+
+  # vector_logs_test_file_sink:
+  #   type: file
   #   inputs:
-  #     # - "vector_logs"
-  #     # - "add_host_parser"
-  #     # - "proxmox_task_logs_reduce"
   #     - "vector_parser_modify_malformed_message_filter"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/vector-%Y-%m-%d.log
   #   encoding:
   #     codec: "text"
 
-  vector_logs_test_file_sink:
-    type: file
-    inputs:
-      - "vector_parser_modify_malformed_message_filter"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/vector-%Y-%m-%d.log
-    encoding:
-      codec: "text"
+  # journald_test_file_sink:
+  #   type: file
+  #   inputs:
+  #     - "journald"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/journald-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "text"
 
-  journald_test_file_sink:
-    type: file
-    inputs:
-      - "journald"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/journald-%Y-%m-%d.log
-    encoding:
-      codec: "text"
+  # vector_parser_add_timestamp_test_file_sink:
+  #   type: file
+  #   inputs:
+  #     - "vector_parser_add_timestamp"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/vector-timestamp-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "text"
 
-  vector_parser_add_timestamp_test_file_sink:
-    type: file
-    inputs:
-      - "vector_parser_add_timestamp"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/vector-timestamp-%Y-%m-%d.log
-    encoding:
-      codec: "text"
+  # vector_parser_add_timestamp_test_file_sink_json:
+  #   type: file
+  #   inputs:
+  #     - "vector_parser_add_timestamp"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/vector-timestamp-json-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "json"
 
-  vector_parser_add_timestamp_test_file_sink_json:
-    type: file
-    inputs:
-      - "vector_parser_add_timestamp"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/vector-timestamp-json-%Y-%m-%d.log
-    encoding:
-      codec: "json"
+  # syslog_test_file_sink_json:
+  #   type: file
+  #   inputs:
+  #     - "syslog_parser"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/syslog-timestamp-json-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "json"
 
-  syslog_test_file_sink_json:
-    type: file
-    inputs:
-      - "syslog_parser"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/syslog-timestamp-json-%Y-%m-%d.log
-    encoding:
-      codec: "json"
-
-  daemon_test_file_sink_json:
-    type: file
-    inputs:
-      - "daemon_parser"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/daemon-timestamp-json-%Y-%m-%d.log
-    encoding:
-      codec: "json"
+  # daemon_test_file_sink_json:
+  #   type: file
+  #   inputs:
+  #     - "daemon_parser"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/daemon-timestamp-json-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "json"
 
   # https://vector.dev/docs/reference/configuration/sinks/loki/#label-expansion
   loki:
@@ -354,7 +381,9 @@ sinks:
       # - "proxmox_task_logs_reduce"
       # - "add_host_parser"
       # - "vector_parser_modify_malformed_message_filter"
-      - "vector_parser_add_timestamp"
+      # - "vector_parser_add_timestamp"
+      - "syslog_parser"
+      - "auth_parser"
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
     # compression: snappy
