@@ -334,25 +334,25 @@ sinks:
   #   encoding:
   #     codec: "text"
 
-  # vector_parser_add_timestamp_test_file_sink:
-  #   type: file
-  #   inputs:
-  #     - "vector_parser_add_timestamp"
-  #   compression: none
-  #   idle_timeout_secs: 30
-  #   path: /tmp/vector-timestamp-%Y-%m-%d.log
-  #   encoding:
-  #     codec: "text"
+  vector_parser_add_timestamp_test_file_sink:
+    type: file
+    inputs:
+      - "vector_parser_add_timestamp"
+    compression: none
+    idle_timeout_secs: 30
+    path: /tmp/vector-timestamp-%Y-%m-%d.log
+    encoding:
+      codec: "text"
 
-  # vector_parser_add_timestamp_test_file_sink_json:
-  #   type: file
-  #   inputs:
-  #     - "vector_parser_add_timestamp"
-  #   compression: none
-  #   idle_timeout_secs: 30
-  #   path: /tmp/vector-timestamp-json-%Y-%m-%d.log
-  #   encoding:
-  #     codec: "json"
+  vector_parser_add_timestamp_test_file_sink_json:
+    type: file
+    inputs:
+      - "vector_parser_add_timestamp"
+    compression: none
+    idle_timeout_secs: 30
+    path: /tmp/vector-timestamp-json-%Y-%m-%d.log
+    encoding:
+      codec: "json"
 
   # syslog_test_file_sink_json:
   #   type: file
@@ -382,6 +382,7 @@ sinks:
       # - "add_host_parser"
       # - "vector_parser_modify_malformed_message_filter"
       # - "vector_parser_add_timestamp"
+      - "journald"
       - "syslog_parser"
       - "auth_parser"
     # endpoint: http://localhost:3100
