@@ -297,7 +297,7 @@ sinks:
       - "vector_parser_add_timestamp"
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
-    # compression: snappy
+    compression: snappy
     labels:
       # '"*"': "{{ metadata }}"
     #   '"pod_labels_*"': "{{ kubernetes.pod_labels }}"
