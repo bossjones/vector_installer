@@ -26,3 +26,6 @@ redo:
 	git pull --rebase
 	$(MAKE) update;
 	tail -f /tmp/*.log | ccze -A
+
+status:
+	systemctl status vector
