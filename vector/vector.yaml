@@ -348,25 +348,25 @@ sinks:
   #   encoding:
   #     codec: "text"
 
-  vector_parser_add_timestamp_test_file_sink:
-    type: file
-    inputs:
-      - "vector_parser_add_timestamp"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/vector-timestamp-%Y-%m-%d.log
-    encoding:
-      codec: "text"
+  # vector_parser_add_timestamp_test_file_sink:
+  #   type: file
+  #   inputs:
+  #     - "vector_parser_add_timestamp"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/vector-timestamp-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "text"
 
-  vector_parser_add_timestamp_test_file_sink_json:
-    type: file
-    inputs:
-      - "vector_parser_add_timestamp"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/vector-timestamp-json-%Y-%m-%d.log
-    encoding:
-      codec: "json"
+  # vector_parser_add_timestamp_test_file_sink_json:
+  #   type: file
+  #   inputs:
+  #     - "vector_parser_add_timestamp"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/vector-timestamp-json-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "json"
 
   # catchall_parser_add_timestamp_test_file_sink_json:
   #   type: file
@@ -405,7 +405,7 @@ sinks:
       # - "proxmox_task_logs_reduce"
       # - "add_host_parser"
       # - "vector_parser_modify_malformed_message_filter"
-      # - "vector_parser_add_timestamp"
+      - "vector_parser_add_timestamp"
       - "vector_parser_modify_malformed_message_filter"
       - "journald"
       - "syslog_parser"
