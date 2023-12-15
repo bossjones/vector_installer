@@ -22,9 +22,9 @@ Requires=network-online.target
 [Service]
 User=root
 Group=root
-ExecStartPre=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
-ExecStart=/usr/local/bin/vector --verbose --config /etc/vector/vector.yaml
-ExecReload=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
+ExecStartPre=/usr/local/bin/vector --config /etc/vector/vector.yaml validate 2>&1
+ExecStart=/usr/local/bin/vector --watch-config --verbose --config /etc/vector/vector.yaml 2>&1
+ExecReload=/usr/local/bin/vector --config /etc/vector/vector.yaml validate 2>&1
 ExecReload=/bin/kill -HUP \$MAINPID
 Restart=always
 AmbientCapabilities=CAP_NET_BIND_SERVICE
