@@ -14,6 +14,9 @@ log_schema:
 
 # Ingest data by tailing one or more files
 sources:
+  host_metrics: # internal metrics
+    type: "host_metrics"
+    namespace: "node"
   vector_metrics: # internal metrics
     type: "internal_metrics"
 
@@ -469,6 +472,7 @@ sinks:
     type: prometheus_exporter
     inputs:
       - "vector_metrics"
+      - "host_metrics"
     address: "0.0.0.0:9598"
     # auth:
     #   strategy: "basic"
