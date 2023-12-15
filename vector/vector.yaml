@@ -297,22 +297,26 @@ sinks:
       - "vector_parser_add_timestamp"
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
-    compression: snappy
+    # compression: snappy
     labels:
-    #   '"*"': "{{ metadata }}"
+      # '"*"': "{{ metadata }}"
     #   '"pod_labels_*"': "{{ kubernetes.pod_labels }}"
       forwarder: vector
     #   "{{ event_field }}": "{{ some_other_event_field }}"
     out_of_order_action: accept
     # path: /loki/api/v1/push
-    # remove_timestamp: true
+    remove_timestamp: true
+    remove_label_fields: false
     tenant_id: docker
+    healthcheck:
+      enabled: true
     request:
       concurrency: "adaptive"
       rate_limit_duration_secs: 1
       rate_limit_num: 10
     encoding:
-      codec: "text"
+      codec: "json"
+      timestamp_format: "rfc3339"
     auth:
       strategy: "basic"
       user: ""
