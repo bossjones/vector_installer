@@ -251,6 +251,21 @@ transforms:
     type: filter
     condition: .malformed != true
 
+  dedupe_catchall:
+    type: dedupe
+    inputs:
+      - "vector_parser_modify_malformed_message_filter"
+      - "vector_parser_add_timestamp"
+      - "vector_parser_modify"
+      - "auth_parser"
+      - "syslog_parser"
+      - "proxmox_task_logs"
+      - "journald"
+    fields:
+      match:
+        - timestamp
+        - host
+        - message
 
   # catchall_parser:
   #   type: remap
@@ -405,12 +420,13 @@ sinks:
       # - "proxmox_task_logs_reduce"
       # - "add_host_parser"
       # - "vector_parser_modify_malformed_message_filter"
-      - "proxmox_task_logs"
-      - "vector_parser_add_timestamp"
-      - "vector_parser_modify_malformed_message_filter"
-      - "journald"
-      - "syslog_parser"
-      - "auth_parser"
+      # - "proxmox_task_logs"
+      # - "vector_parser_add_timestamp"
+      # - "vector_parser_modify_malformed_message_filter"
+      # - "journald"
+      # - "syslog_parser"
+      # - "auth_parser"
+      - "dedupe_catchall"
     # endpoint: http://localhost:3100
     endpoint: http://loki-gateway.scarlettlab.home
     # compression: snappy
