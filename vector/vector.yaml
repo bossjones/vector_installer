@@ -470,3 +470,8 @@ sinks:
     inputs:
       - "vector_metrics"
     address: "0.0.0.0:9598"
+    auth:
+      strategy: "basic"
+      user: ""
+      password: ""
+    default_namespace: vector
