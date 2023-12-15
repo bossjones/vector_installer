@@ -30,5 +30,11 @@ redo:
 status:
 	systemctl status vector
 
+stop:
+	systemctl stop vector
+
+start:
+	systemctl start vector
+
 validate:
 	vector graph --config ./vector/vector.yaml
