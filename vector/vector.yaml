@@ -314,8 +314,10 @@ sinks:
     encoding:
       codec: "text"
     auth:
-      strategy: "bearer"
-      token: "none"
+      strategy: "basic"
+      user: ""
+      password: ""
+    timestamp_format: "rfc3339"
 
   # prometheus:
   #   type: "prometheus_remote_write"
