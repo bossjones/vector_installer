@@ -61,7 +61,7 @@ apt install -y curl wget
 # ------------------------------------------------------------------------------
 
 # Add vector:vector user & group
-id --user vector >/dev/null 2>&1 ||
+id --user vector >/dev/null ||
   useradd --system --shell /sbin/nologin --home-dir /var/lib/vector --user-group \
     --comment "Vector observability data router" vector
 
@@ -93,9 +93,11 @@ Requires=network-online.target
 [Service]
 User=root
 Group=root
-ExecStartPre=/usr/local/bin/vector --config /etc/vector/vector.yaml validate 2>&1
-ExecStart=/usr/local/bin/vector --watch-config --verbose --config /etc/vector/vector.yaml 2>&1
-ExecReload=/usr/local/bin/vector --config /etc/vector/vector.yaml validate 2>&1
+StandardOutput=journal+console
+StandardError=inherit
+ExecStartPre=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
+ExecStart=/usr/local/bin/vector --watch-config --verbose --config /etc/vector/vector.yaml
+ExecReload=/usr/local/bin/vector --config /etc/vector/vector.yaml validate
 ExecReload=/bin/kill -HUP \$MAINPID
 Restart=always
 AmbientCapabilities=CAP_NET_BIND_SERVICE
