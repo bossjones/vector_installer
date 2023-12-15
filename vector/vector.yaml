@@ -317,7 +317,7 @@ sinks:
       strategy: "basic"
       user: ""
       password: ""
-    timestamp_format: "rfc3339"
+    # timestamp_format: "rfc3339"
 
   # prometheus:
   #   type: "prometheus_remote_write"
