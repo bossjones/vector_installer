@@ -216,20 +216,20 @@ transforms:
     type: remap
     # Reformat the timestamp to Unix time
     # ".timestamp = to_unix_timestamp!(to_timestamp!(.timestamp))"
+    # .@timestamp = parse_timestamp!(.timestamp, "%F %T%.9f")
     source: |
-      .@timestamp = parse_timestamp!(.timestamp, "%F %T%.9f")
       .malformed = false
-    # matches, err = parse_regex(
-    #   .message,
-    #   r'^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{9}) (?P<message>.*)'
-    # )
-    # if matches != null {
-    #   .message = matches.message
-    #   .@timestamp = parse_timestamp!(matches.time, "%F %T%.9f")
-    # } else {
-    #   log(err, level: "error")
-    #   .malformed = true
-    # }
+      matches, err = parse_regex(
+        .message,
+        r'^(?P<message>.*)'
+      )
+      if matches != null {
+        .message = matches.message
+        .@timestamp = parse_timestamp!(.timestamp, "%F %T%.9f")
+      } else {
+        log(err, level: "error")
+        .malformed = true
+      }
 
   vector_parser_add_timestamp:
     inputs:
@@ -382,6 +382,7 @@ sinks:
       # - "add_host_parser"
       # - "vector_parser_modify_malformed_message_filter"
       # - "vector_parser_add_timestamp"
+      - "vector_parser_modify_malformed_message_filter"
       - "journald"
       - "syslog_parser"
       - "auth_parser"
