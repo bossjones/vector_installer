@@ -474,4 +474,4 @@ sinks:
     #   strategy: "basic"
     #   user: ""
     #   password: ""
-    default_namespace: vector
+    default_namespace: service
