@@ -164,25 +164,19 @@ transforms:
     inputs:
       - "syslog_logs"
     type: "remap"
-    source: ". |= parse_syslog!(.message) ?? {}"
-
-  # daemon_parser:
-  #   inputs:
-  #     - "daemon_logs"
-  #   type: "remap"
-  #   source: ". |= parse_syslog!(.message) ?? {}"
+    source: ". |= parse_syslog!(.message)"
 
   auth_parser:
     inputs:
       - "auth_logs"
     type: "remap"
     source: |
-      structured, err = parse_linux_authorization!(.message)
-      if err != null {
-        log("Unable to parse linux authorization: " + err, level: "error")
-      } else {
-        . = merge(., structured)
-      }
+      . |= parse_linux_authorization!(.message)
+    # if err != null {
+    #   log("Unable to parse linux authorization: " + err, level: "error")
+    # } else {
+    #   . = merge(., structured)
+    # }
 
   # # Sample the data to save on cost
   # apache_sampler:
@@ -258,24 +252,24 @@ transforms:
     condition: .malformed != true
 
 
-  catchall_parser:
-    type: remap
-    inputs:
-      - vector_logs
-    source: |
-      .agent_name = "vector"
-      parsed, err = parse_json(.message)
-      if err == null {
-          .message = parsed
-          .format = "json"
-      } else {
-          .format = "ascii"
-      }
-      matches = parse_regex!(.file, r'.*/(?P<num>\d+)-(?P<name>\w+).log')
-      .origin, err = .host + "/" + matches.name + "/" + matches.num
-      if err != null {
-          log("Failed to parse origin from file name", level: "error")
-      }
+  # catchall_parser:
+  #   type: remap
+  #   inputs:
+  #     - vector_logs
+  #   source: |
+  #     .agent_name = "vector"
+  #     parsed, err = parse_json(.message)
+  #     if err == null {
+  #         .message = parsed
+  #         .format = "json"
+  #     } else {
+  #         .format = "ascii"
+  #     }
+  #     matches, err = parse_regex!(.file, r'.*/(?P<num>\d+)-(?P<name>\w+).log')
+  #     .origin, err = .host + "/" + matches.name + "/" + matches.num
+  #     if err == null {
+  #         log("Failed to parse origin from file name", level: "error")
+  #     }
 
   # proxmox_task_logs_reduce:
   #   type: reduce
@@ -374,15 +368,15 @@ sinks:
     encoding:
       codec: "json"
 
-  catchall_parser_add_timestamp_test_file_sink_json:
-    type: file
-    inputs:
-      - "catchall_parser"
-    compression: none
-    idle_timeout_secs: 30
-    path: /tmp/catchall-timestamp-json-%Y-%m-%d.log
-    encoding:
-      codec: "json"
+  # catchall_parser_add_timestamp_test_file_sink_json:
+  #   type: file
+  #   inputs:
+  #     - "catchall_parser"
+  #   compression: none
+  #   idle_timeout_secs: 30
+  #   path: /tmp/catchall-timestamp-json-%Y-%m-%d.log
+  #   encoding:
+  #     codec: "json"
 
   # syslog_test_file_sink_json:
   #   type: file

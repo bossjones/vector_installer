@@ -41,3 +41,6 @@ cat:
 
 validate:
 	vector graph --config ./vector/vector.yaml
+
+run:
+	/usr/local/bin/vector --watch-config --verbose --config /etc/vector/vector.yaml 2>&1
