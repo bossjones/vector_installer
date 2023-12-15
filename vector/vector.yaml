@@ -100,39 +100,39 @@ sources:
   #   # offset_key: offset
   #   # read_from: beginning
 
-  # proxmox_task_logs:
-  #   type: "file"
-  #   include:
-  #     - "/var/log/pve/tasks/**/*" # supports globbing
-  #   exclude:
-  #     - "/var/log/pve/tasks/5"
-  #     - "/var/log/pve/tasks/4"
-  #     - "/var/log/pve/tasks/A"
-  #     - "/var/log/pve/tasks/B"
-  #     - "/var/log/pve/tasks/6"
-  #     - "/var/log/pve/tasks/3"
-  #     - "/var/log/pve/tasks/D"
-  #     - "/var/log/pve/tasks/7"
-  #     - "/var/log/pve/tasks/F"
-  #     - "/var/log/pve/tasks/E"
-  #     - "/var/log/pve/tasks/2"
-  #     - "/var/log/pve/tasks/0"
-  #     - "/var/log/pve/tasks/C"
-  #     - "/var/log/pve/tasks/1"
-  #     - "/var/log/pve/tasks/9"
-  #     - "/var/log/pve/tasks/8"
-  #   ignore_older: 86400          # 1 day
-  #   # The delay between file discovery calls.
-  #   # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
-  #   glob_minimum_cooldown_ms: 1000
-  #   # host_key: host
-  #   # Ignore files with a data modification date older than the specified number of seconds.
-  #   # ignore_older_secs: 600
-  #   # line_delimiter: "\n"
-  #   max_line_bytes: 102400
-  #   max_read_bytes: 2048
-  #   # offset_key: offset
-  #   # read_from: beginning
+  proxmox_task_logs:
+    type: "file"
+    include:
+      - "/var/log/pve/tasks/**/*" # supports globbing
+    exclude:
+      - "/var/log/pve/tasks/5"
+      - "/var/log/pve/tasks/4"
+      - "/var/log/pve/tasks/A"
+      - "/var/log/pve/tasks/B"
+      - "/var/log/pve/tasks/6"
+      - "/var/log/pve/tasks/3"
+      - "/var/log/pve/tasks/D"
+      - "/var/log/pve/tasks/7"
+      - "/var/log/pve/tasks/F"
+      - "/var/log/pve/tasks/E"
+      - "/var/log/pve/tasks/2"
+      - "/var/log/pve/tasks/0"
+      - "/var/log/pve/tasks/C"
+      - "/var/log/pve/tasks/1"
+      - "/var/log/pve/tasks/9"
+      - "/var/log/pve/tasks/8"
+    ignore_older: 86400          # 1 day
+    # The delay between file discovery calls.
+    # This controls the interval at which files are searched. A higher value results in greater chances of some short-lived files being missed between searches, but a lower value increases the performance impact of file discovery.
+    glob_minimum_cooldown_ms: 1000
+    # host_key: host
+    # Ignore files with a data modification date older than the specified number of seconds.
+    # ignore_older_secs: 600
+    # line_delimiter: "\n"
+    max_line_bytes: 102400
+    max_read_bytes: 2048
+    # offset_key: offset
+    # read_from: beginning
 
   journald:
     type: journald
@@ -405,6 +405,7 @@ sinks:
       # - "proxmox_task_logs_reduce"
       # - "add_host_parser"
       # - "vector_parser_modify_malformed_message_filter"
+      - "proxmox_task_logs"
       - "vector_parser_add_timestamp"
       - "vector_parser_modify_malformed_message_filter"
       - "journald"
