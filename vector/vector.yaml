@@ -51,6 +51,10 @@ sources:
     max_read_bytes: 2048
     # offset_key: offset
     # read_from: beginning
+    ignore_not_found: true
+    fingerprint:
+      strategy: "checksum"
+      lines: 10
 
   auth_logs:
     type: "file"
@@ -68,6 +72,10 @@ sources:
     max_read_bytes: 2048
     # offset_key: offset
     # read_from: beginning
+    ignore_not_found: true
+    fingerprint:
+      strategy: "checksum"
+      lines: 10
 
   # var_log_wildcard_logs:
   #   type: "file"
@@ -136,6 +144,10 @@ sources:
     max_read_bytes: 2048
     # offset_key: offset
     # read_from: beginning
+    ignore_not_found: true
+    fingerprint:
+      strategy: "checksum"
+      lines: 10
 
   journald:
     type: journald

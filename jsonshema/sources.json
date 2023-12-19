@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "The kind of source, always set to 'source'."
+          },
+          "proxy": {
+            "type": "object",
+            "properties": {
+              // Insert specific details about proxy configuration here
+            },
+            "description": "Proxy configuration settings."
+          },
+          "data_dir": {
+            "type": "string",
+            "description": "The directory used to persist file checkpoint positions."
+          },
+          "multiline": {
+            "type": "object",
+            "properties": {
+              "condition_pattern": {
+                "type": "string",
+                "description": "Condition regex pattern to look for."
+              },
+              "mode": {
+                "type": "string",
+                "description": "Mode of operation for multiline parsing."
+              },
+              "start_pattern": {
+                "type": "string",
+                "description": "Start regex pattern to identify the beginning of a message."
+              },
+              "timeout_ms": {
+                "type": "integer",
+                "description": "Maximum time to wait for continuation of the message."
+              }
+            },
+            "description": "Multiline parsing configuration."
+          },
+          "framing": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "description": "The framing method for incoming byte sequences."
+              },
+              // Additional properties based on framing method
+            },
+            "description": "Framing configuration for incoming byte sequences."
+          },
+          "decoding": {
+            "type": "object",
+            "properties": {
+              "codec": {
+                "type": "string",
+                "description": "The codec used for decoding events."
+              }
+              // Additional decoding properties
+            },
+            "description": "Decoding configuration for events."
+          },
+          "encoding": {
+            "type": "object",
+            "properties": {
+              "charset": {
+                "type": "string",
+                "description": "Encoding of the source messages."
+              }
+              // Additional encoding properties
+            },
+            "description": "Encoding specific source behavior configuration."
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              // TLS configuration details
+            },
+            "description": "TLS configuration for the source."
+          },
+          "receive_buffer_bytes": {
+            "type": "integer",
+            "description": "Receive buffer size for the source."
+          },
+          "keepalive": {
+            "type": "object",
+            "properties": {
+              // TCP keepalive configuration details
+            },
+            "description": "TCP keepalive behavior configuration."
+          }
+          // Insert additional source-specific properties here
+        },
+        "required": ["type"]
+      }
+    }
+  }
+}
