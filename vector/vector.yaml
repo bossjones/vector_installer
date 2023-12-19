@@ -54,6 +54,7 @@ sources:
     ignore_not_found: true
     fingerprint:
       strategy: "checksum"
+      ignored_header_bytes: 0
       lines: 10
 
   auth_logs:
@@ -75,6 +76,7 @@ sources:
     ignore_not_found: true
     fingerprint:
       strategy: "checksum"
+      ignored_header_bytes: 0
       lines: 10
 
   # var_log_wildcard_logs:
@@ -147,6 +149,7 @@ sources:
     ignore_not_found: true
     fingerprint:
       strategy: "checksum"
+      ignored_header_bytes: 0
       lines: 10
 
   journald:
